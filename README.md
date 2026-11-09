@@ -13,6 +13,7 @@ strategy family:
 | `sdmux`    | an SD card image written through a USB-SD-Mux |
 | `fastboot` | images flashed to eMMC/NOR over fastboot    |
 | `qemu`     | QEMU, no hardware needed                    |
+| `ymodem`   | a loader staged over fastboot, then U-Boot sent to it over YMODEM, then `tftpboot` |
 
 ## Install
 
