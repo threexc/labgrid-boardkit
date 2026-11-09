@@ -41,6 +41,7 @@ labgrid_boardkit = "labgrid_boardkit.fixtures"
 tftp = "labgrid_boardkit.strategies.tftp:TftpBootStrategy"
 sdmux = "labgrid_boardkit.strategies.sdmux:SdMuxBootStrategy"
 fastboot = "labgrid_boardkit.strategies.fastboot:FastbootFlashStrategy"
+ymodem = "labgrid_boardkit.strategies.ymodem:YmodemBootStrategy"
 qemu = "labgrid_boardkit.strategies.qemu:QemuBootStrategy"
 
 [tool.pytest.ini_options]
