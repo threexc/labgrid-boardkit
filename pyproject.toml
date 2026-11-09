@@ -1,0 +1,62 @@
+[build-system]
+requires = ["uv_build>=0.7,<0.14"]
+build-backend = "uv_build"
+
+[project]
+name = "labgrid-boardkit"
+version = "0.1.0"
+description = "Board manifests, boot strategies, fixtures and test suites for labgrid"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Trevor Gamblin", email = "tgamblin@baylibre.com" }]
+requires-python = ">=3.11"
+classifiers = [
+    "Framework :: Pytest",
+    "Topic :: Software Development :: Embedded Systems",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = [
+    "jinja2",
+    "jsonschema",
+    "labgrid>=26.0",
+    "pytest",
+    "pyyaml",
+]
+
+[project.urls]
+Repository = "https://github.com/threexc/labgrid-boardkit"
+
+[project.scripts]
+boardkit-validate = "labgrid_boardkit.validate:main"
+boardkit-render = "labgrid_boardkit.render:main"
+
+# Auto-loaded into any pytest run inside this venv:
+[project.entry-points.pytest11]
+labgrid_boardkit = "labgrid_boardkit.fixtures"
+
+# Strategy family registry. Add a line here to expose a new family; third-party
+# packages register in the same group.
+[project.entry-points."labgrid_boardkit.strategies"]
+tftp = "labgrid_boardkit.strategies.tftp:TftpBootStrategy"
+sdmux = "labgrid_boardkit.strategies.sdmux:SdMuxBootStrategy"
+fastboot = "labgrid_boardkit.strategies.fastboot:FastbootFlashStrategy"
+qemu = "labgrid_boardkit.strategies.qemu:QemuBootStrategy"
+
+[tool.pytest.ini_options]
+# src/labgrid_boardkit/{tests,ptest} are on-target suites needing labgrid
+# hardware or QEMU; run those with `pytest --pyargs labgrid_boardkit.tests`.
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
