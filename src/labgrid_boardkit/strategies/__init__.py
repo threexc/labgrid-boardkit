@@ -10,6 +10,7 @@ from labgrid_boardkit.strategies.fastboot import FastbootFlashStrategy, Fastboot
 from labgrid_boardkit.strategies.qemu import ExternalQemuStrategy, QemuBootStrategy, QemuStatus
 from labgrid_boardkit.strategies.sdmux import SdMuxBootStrategy, SdMuxStatus
 from labgrid_boardkit.strategies.tftp import TftpBootStrategy, TftpStatus
+from labgrid_boardkit.strategies.ymodem import YmodemBootStrategy
 
 __all__ = [
     "BoardStrategy",
@@ -22,4 +23,5 @@ __all__ = [
     "SdMuxStatus",
     "TftpBootStrategy",
     "TftpStatus",
+    "YmodemBootStrategy",
 ]

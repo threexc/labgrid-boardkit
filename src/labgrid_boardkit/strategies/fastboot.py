@@ -68,7 +68,7 @@ class FastbootFlashStrategy(BoardStrategy):
         time.sleep(press)
         self.recovery.set(False)
 
-    def _stage(self, remote_path: str):
+    def _stage_image(self, remote_path: str):
         fb = self.manifest["fastboot"]
         retries = fb.get("stage_retries", 5)
         # After a continue, the previous stage's USB device lingers until the
@@ -83,7 +83,9 @@ class FastbootFlashStrategy(BoardStrategy):
                     raise
                 time.sleep(fb.get("continue_delay", 3))
 
-    def _flash(self):
+    def _load_stages(self):
+        """Enter download mode and stage, then continue, each
+        ``fastboot.stage`` image in order. Leaves the fastboot driver active."""
         fb = self.manifest["fastboot"]
         # Copy staged images to the exporter up front: the boot ROM's download
         # mode doesn't wait around for slow transfers.
@@ -95,9 +97,13 @@ class FastbootFlashStrategy(BoardStrategy):
         self._enter_download_mode()
         self.target.activate(self.fastboot)
         for remote_path in staged:
-            self._stage(remote_path)
+            self._stage_image(remote_path)
             self.fastboot.continue_boot()
             time.sleep(fb.get("continue_delay", 3))
+
+    def _flash(self):
+        fb = self.manifest["fastboot"]
+        self._load_stages()
         for partition, image in fb["flash"].items():
             if image is None:  # a variant nulls out a base-board partition
                 continue

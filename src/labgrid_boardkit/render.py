@@ -22,6 +22,7 @@ _STRATEGY_TO_TEMPLATE = {
     "tftp": ("client-tftp.yaml.j2", "client.yaml"),
     "sdmux": ("client-sdmux.yaml.j2", "client.yaml"),
     "fastboot": ("client-fastboot.yaml.j2", "client.yaml"),
+    "ymodem": ("client-ymodem.yaml.j2", "client.yaml"),
     "qemu": ("client-qemu.yaml.j2", "env.yaml"),
 }
 
@@ -98,7 +99,9 @@ def render_index(board_dirs: list[Path]) -> str:
                 ),
                 "nightly": "no" if m.get("exclude_from_nightly") else "yes",
                 "client": _template(board_dir, m, variant)[1],
-                "image_dir": m["fastboot"]["image_dir"] if m["strategy"] == "fastboot" else None,
+                "image_dir": (
+                    m["fastboot"]["image_dir"] if m["strategy"] in ("fastboot", "ymodem") else None
+                ),
             }
             lines.append("\t".join(str(row[c] or "-") for c in INDEX_COLUMNS))
     return "\n".join(lines) + "\n"

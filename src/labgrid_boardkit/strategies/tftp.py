@@ -44,6 +44,10 @@ class TftpBootStrategy(BoardStrategy):
     def _stage(self):
         helpers.uboot_stage(self)
 
+    def _power_on(self):
+        """Power the board up into U-Boot."""
+        self.power.cycle()
+
     def _tftp_stage_files(self):
         boot = self.manifest["boot"]
         tftp = self.manifest["tftp"]
@@ -74,7 +78,7 @@ class TftpBootStrategy(BoardStrategy):
         elif status == TftpStatus.uboot:
             self.transition(TftpStatus.off)
             self.target.activate(self.console)
-            self.power.cycle()
+            self._power_on()
             self.target.activate(self.uboot)
             self._stage()
         elif status == TftpStatus.emmc:

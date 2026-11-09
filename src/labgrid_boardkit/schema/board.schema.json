@@ -9,7 +9,7 @@
     "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
     "arch": { "type": "string" },
     "description": { "type": "string" },
-    "strategy": { "enum": ["tftp", "sdmux", "fastboot", "qemu"] },
+    "strategy": { "enum": ["tftp", "sdmux", "fastboot", "qemu", "ymodem"] },
     "remote_place": { "type": "string" },
     "image_source": { "type": "string" },
     "yocto_machine": { "type": "string" },
@@ -97,6 +97,15 @@
       }
     },
     "images": { "type": "object" },
+    "ymodem": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string",
+          "description": "Image sent over YMODEM to the staged loader, relative to fastboot.image_dir."
+        }
+      }
+    },
     "strategy_class": { "type": "string" }
   },
   "allOf": [
@@ -129,6 +138,18 @@
         "required": ["fastboot", "buttons"],
         "properties": {
           "fastboot": { "required": ["image_dir", "recovery_button", "reset_button", "flash"] }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "strategy": { "const": "ymodem" } }, "required": ["strategy"] },
+      "then": {
+        "required": ["boot", "tftp", "fastboot", "buttons", "ymodem"],
+        "properties": {
+          "boot": { "required": ["bootargs", "kernel_addr"] },
+          "tftp": { "required": ["subdir", "kernel"] },
+          "fastboot": { "required": ["image_dir", "recovery_button", "reset_button", "stage"] },
+          "ymodem": { "required": ["image"] }
         }
       }
     },
