@@ -45,4 +45,8 @@ class YmodemBootStrategy(TftpBootStrategy):
         self._load_stages()
         self.target.deactivate(self.fastboot)
         path = Path(self._image(self.manifest["ymodem"]["image"]))
-        ymodem.send(self._getc, self.console._write, path.name, path.read_bytes())
+        data = path.read_bytes()
+        # Takes minutes at 115200 baud, with nothing else logged meanwhile.
+        self.logger.info("Sending %s (%d bytes) over YMODEM", path.name, len(data))
+        ymodem.send(self._getc, self.console._write, path.name, data)
+        self.logger.info("Sent %s", path.name)
