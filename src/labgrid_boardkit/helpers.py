@@ -44,6 +44,10 @@ def uboot_stage(strategy):
 
 def uboot_set_server_ip(strategy, serverip=default_serverip):
     strategy.uboot.run("setenv autoload no")
+    # uboot.ethaddr: for a U-Boot that can't read the board's MAC and makes
+    # up a random one, which a DHCP server serving only known MACs ignores.
+    if ethaddr := strategy.manifest.get("uboot", {}).get("ethaddr"):
+        strategy.uboot.run_check(f"setenv ethaddr {ethaddr}")
     # run_check: a failed dhcp/tftpboot should fail here, not as a confusing
     # boot timeout later.
     # uboot.dhcp_timeout covers PHY autonegotiation too, which dhcp waits for.

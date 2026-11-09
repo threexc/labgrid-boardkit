@@ -315,3 +315,11 @@ def test_external_qemu_shell_then_off():
     strategy.transition("off")
     assert strategy.status == QemuStatus.off
     assert strategy.target.deactivated == [strategy.console]
+
+
+def test_tftp_sets_ethaddr_before_dhcp(tftp_strategy):
+    s = tftp_strategy
+    s.manifest["uboot"] = {"ethaddr": "50:0A:52:0B:E4:DA"}
+    s.transition("tftp")
+    checks = [c.args[0] for c in s.uboot.run_check.call_args_list]
+    assert checks.index("setenv ethaddr 50:0A:52:0B:E4:DA") < checks.index("dhcp")
