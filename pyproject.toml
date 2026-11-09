@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "labgrid-boardkit"
-version = "0.1.0"
+version = "0.2.0"
 description = "Board manifests, boot strategies, fixtures and test suites for labgrid"
 readme = "README.md"
 license = "MIT"
