@@ -1,0 +1,19 @@
+name: example-fastboot
+yocto_machine: example-fastboot
+strategy: fastboot
+description: Board flashed over USB fastboot, with relay-driven buttons
+remote_place: example-fastboot
+inherits:
+  - ../families/example-soc/defaults.yaml
+
+buttons: [recovery, reset]
+
+fastboot:
+  image_dir: /srv/images/example-fastboot
+  recovery_button: recovery
+  reset_button: reset
+  stage:
+    - u-boot.itb
+  flash:
+    uboot: u-boot.itb
+    rootfs: rootfs.ext4

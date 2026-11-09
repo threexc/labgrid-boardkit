@@ -1,0 +1,17 @@
+name: example-tftp
+yocto_machine: example-tftp
+strategy: tftp
+description: Board booted by U-Boot over TFTP
+remote_place: example-tftp
+inherits:
+  - ../families/example-soc/defaults.yaml
+
+boot:
+  bootargs: console=ttyS0,115200
+
+tftp:
+  subdir: example-tftp
+  dtb: example.dtb
+
+uboot:
+  tftp_cmd: booti $kernel_addr_r - $fdt_addr_r

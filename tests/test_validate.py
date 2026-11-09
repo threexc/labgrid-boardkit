@@ -1,35 +1,35 @@
 import jsonschema
 import pytest
-from conftest import REAL_BOARDS
+from conftest import EXAMPLE_BOARDS
 
 from labgrid_boardkit.manifest import load_board
 from labgrid_boardkit.validate import main, validate_manifest
 
 
-@pytest.mark.parametrize("board", REAL_BOARDS)
-def test_validate_manifest_accepts_real_boards(boards_dir, board):
+@pytest.mark.parametrize("board", EXAMPLE_BOARDS)
+def test_validate_manifest_accepts_example_boards(boards_dir, board):
     validate_manifest(load_board(boards_dir / board))
 
 
 def test_validate_manifest_rejects_missing_required_field(boards_dir):
-    manifest = load_board(boards_dir / "qemuriscv64")
+    manifest = load_board(boards_dir / "example-qemu")
     del manifest["qemu"]["binary"]
     with pytest.raises(jsonschema.ValidationError):
         validate_manifest(manifest)
 
 
 def test_validate_manifest_rejects_unknown_strategy_enum_value(boards_dir):
-    manifest = load_board(boards_dir / "qemuriscv64")
+    manifest = load_board(boards_dir / "example-qemu")
     manifest["strategy"] = "does-not-exist"
     with pytest.raises(jsonschema.ValidationError):
         validate_manifest(manifest)
 
 
-def test_main_ok_for_real_boards(boards_dir, capsys):
-    board_dirs = [str(boards_dir / b) for b in REAL_BOARDS]
+def test_main_ok_for_example_boards(boards_dir, capsys):
+    board_dirs = [str(boards_dir / b) for b in EXAMPLE_BOARDS]
     assert main(board_dirs) == 0
     out = capsys.readouterr().out
-    for board in REAL_BOARDS:
+    for board in EXAMPLE_BOARDS:
         assert f"ok    {boards_dir / board}/board.yaml" in out
 
 

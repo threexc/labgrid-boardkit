@@ -1,0 +1,53 @@
+targets:
+  main:
+    resources:
+      RemotePlace:
+        name: example-sdmux
+    drivers:
+      - SerialDriver:
+          name: 'example-sdmux-console-1'
+          bindings:
+            port: 'serial'
+      - GpioDigitalOutputDriver:
+          name: 'example-sdmux-power-gpio-1'
+          bindings:
+            gpio: 'power-gpio'
+      - DigitalOutputPowerDriver:
+          name: 'example-sdmux-power-1'
+          bindings:
+            output: 'example-sdmux-power-gpio-1'
+      - TFTPProviderDriver:
+          name: 'example-sdmux-tftp-1'
+          bindings:
+            provider: 'tftp'
+      - UBootDriver:
+          prompt: '=> '
+          autoboot: 'Hit any key to stop autoboot'
+          interrupt: ' '
+          name: 'example-sdmux-uboot-1'
+          boot_commands:
+            emmc: 'boot'
+            tftp: 'booti $kernel_addr_r $ramdisk_addr_r:$filesize $fdt_addr_r'
+          bindings:
+            console: 'example-sdmux-console-1'
+          login_timeout: 30
+          boot_timeout: 30
+          strip_timestamp: True
+      - ShellDriver:
+          prompt: 'root@[\w-]+:[^ ]+# '
+          login_prompt: '[-\w]+ login: '
+          username: 'root'
+          name: 'example-sdmux-shell-1'
+          bindings:
+            console: 'example-sdmux-console-1'
+      - TftpBootStrategy:
+          name: 'example-sdmux-strategy-1'
+          bindings:
+            power: 'example-sdmux-power-1'
+            console: 'example-sdmux-console-1'
+            uboot: 'example-sdmux-uboot-1'
+            shell: 'example-sdmux-shell-1'
+            tftp: 'example-sdmux-tftp-1'
+
+imports:
+  - strategy.py

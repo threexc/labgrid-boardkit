@@ -23,38 +23,34 @@ pip install labgrid-boardkit
 ## Usage
 
 Lay out your boards as `boards/<name>/board.yaml`. Shared settings can go in
-a file listed under `inherits:`. For example (more, one per family, in
-`tests/fixtures/boards/`):
+a file listed under `inherits:`. For example (`tests/fixtures/boards/` has one
+board per family, plus a shared `families/` file and a variant):
 
 ```yaml
-name: qemuriscv64
+name: example-qemu
 yocto_machine: qemuriscv64
 strategy: qemu
 arch: riscv64
-description: QEMU RISC-V 64 virt machine. Yocto image, no physical hardware
+description: QEMU RISC-V virt machine, no hardware needed
 
 boot:
-  method: qemu
-  bootargs: root=/dev/vda rw console=ttyS0 earlycon
+  bootargs: root=/dev/vda rw console=ttyS0
 
 qemu:
   binary: qemu-system-riscv64
   machine: virt
-  cpu: rva23s64
-  memory: 8192
+  cpu: rv64
+  memory: 2048
   ssh_port: 2222
   telnet_port: 2323
 
 images:
-  bios: /home/labgrid/fw_jump.elf
-  kernel: /home/labgrid/Image
-  ext4: /home/labgrid/ptest_image.ext4
+  bios: /srv/images/example-qemu/fw_jump.elf
+  kernel: /srv/images/example-qemu/Image
+  ext4: /srv/images/example-qemu/rootfs.ext4
 
 shell:
   username: root
-  password: null
-
-strategy_class: QEMUYoctoStrategy
 ```
 
 From the directory that contains `boards/`:
@@ -71,7 +67,7 @@ from `$BOARD` or the nearest `client.yaml`, and provides the `tftp`, `sd` and
 
 ```
 BOARD=boards/my-board pytest --pyargs labgrid_boardkit.tests
-pytest --lg-env boards/qemuriscv64/env.yaml --pyargs labgrid_boardkit.ptest
+pytest --lg-env boards/example-qemu/env.yaml --pyargs labgrid_boardkit.ptest
 ```
 
 ## Adding a strategy family

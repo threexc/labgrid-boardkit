@@ -1,0 +1,22 @@
+# Settings shared by every board on one SoC. A board pulls these in with
+# `inherits: [../families/example-soc/defaults.yaml]`; its own values win.
+arch: riscv64
+
+uboot:
+  prompt: '=> '
+  autoboot: 'Hit any key to stop autoboot'
+  interrupt: ' '
+  emmc_cmd: boot
+
+boot:
+  kernel_addr: $kernel_addr_r
+  dtb_addr: $fdt_addr_r
+
+tftp:
+  kernel: Image
+
+shell:
+  username: root
+  password: null
+  prompt: 'root@[\w-]+:[^ ]+# '
+  login_prompt: '[-\w]+ login: '

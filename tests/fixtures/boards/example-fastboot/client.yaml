@@ -1,0 +1,50 @@
+targets:
+  main:
+    resources:
+      RemotePlace:
+        name: example-fastboot
+    drivers:
+      - SerialDriver:
+          name: 'example-fastboot-console-1'
+          bindings:
+            port: 'serial'
+      - GpioDigitalOutputDriver:
+          name: 'example-fastboot-power-gpio-1'
+          bindings:
+            gpio: 'power-gpio'
+      - DigitalOutputPowerDriver:
+          name: 'example-fastboot-power-1'
+          bindings:
+            output: 'example-fastboot-power-gpio-1'
+      - GpioDigitalOutputDriver:
+          name: 'example-fastboot-recovery-gpio-1'
+          bindings:
+            gpio: 'recovery-gpio'
+      - GpioDigitalOutputDriver:
+          name: 'example-fastboot-reset-gpio-1'
+          bindings:
+            gpio: 'reset-gpio'
+      - AndroidFastbootDriver:
+          name: 'example-fastboot-fastboot-1'
+          bindings:
+            fastboot: 'fastboot'
+      - ShellDriver:
+          prompt: 'root@[\w-]+:[^ ]+# '
+          login_prompt: '[-\w]+ login: '
+          login_timeout: 120
+          username: 'root'
+          name: 'example-fastboot-shell-1'
+          bindings:
+            console: 'example-fastboot-console-1'
+      - FastbootFlashStrategy:
+          name: 'example-fastboot-strategy-1'
+          bindings:
+            power: 'example-fastboot-power-1'
+            console: 'example-fastboot-console-1'
+            shell: 'example-fastboot-shell-1'
+            fastboot: 'example-fastboot-fastboot-1'
+            recovery: 'example-fastboot-recovery-gpio-1'
+            reset: 'example-fastboot-reset-gpio-1'
+
+imports:
+  - strategy.py

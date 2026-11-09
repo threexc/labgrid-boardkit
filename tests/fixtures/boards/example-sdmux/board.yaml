@@ -1,0 +1,30 @@
+name: example-sdmux
+yocto_machine: example-sdmux
+strategy: sdmux
+description: Board booted from an SD card written through a USB-SD-Mux
+remote_place: example-sdmux
+inherits:
+  - ../families/example-soc/defaults.yaml
+
+image:
+  label: sdimage
+  path: /srv/images/example-sdmux/rootfs.wic.gz
+
+tools:
+  usbsdmux: /usr/local/bin/usbsdmux
+
+# Each variant renders to client-<name>.yaml and gets its own row in
+# machines.tsv.
+variants:
+  tftp:
+    strategy: tftp
+    exclude_from_nightly: true
+    boot:
+      bootargs: console=ttyS0,115200
+      ramdisk_addr: $ramdisk_addr_r
+    tftp:
+      subdir: example-sdmux
+      dtb: example.dtb
+      initramfs: uRamdisk
+    uboot:
+      tftp_cmd: booti $kernel_addr_r $ramdisk_addr_r:$filesize $fdt_addr_r

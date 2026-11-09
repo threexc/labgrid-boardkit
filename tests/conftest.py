@@ -10,10 +10,10 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-# A small sample of real boards, one per strategy family, with their rendered
+# Synthetic example boards, one per strategy family, with their rendered
 # outputs committed alongside so the render/validate round-trip is covered.
 BOARDS_DIR = REPO_ROOT / "tests" / "fixtures" / "boards"
-REAL_BOARDS = sorted(p.parent.name for p in BOARDS_DIR.glob("*/board.yaml"))
+EXAMPLE_BOARDS = sorted(p.parent.name for p in BOARDS_DIR.glob("*/board.yaml"))
 
 
 @pytest.fixture

@@ -1,0 +1,47 @@
+targets:
+  main:
+    resources:
+      RemotePlace:
+        name: example-sdmux
+    drivers:
+      - SerialDriver:
+          name: 'example-sdmux-console-1'
+          bindings:
+            port: 'serial'
+      - GpioDigitalOutputDriver:
+          name: 'example-sdmux-power-gpio-1'
+          bindings:
+            gpio: 'power-gpio'
+      - DigitalOutputPowerDriver:
+          name: 'example-sdmux-power-1'
+          bindings:
+            output: 'example-sdmux-power-gpio-1'
+      - USBStorageDriver:
+          image: 'sdimage'
+          bindings:
+            storage: 'sdmux'
+      - USBSDMuxDriver:
+          bindings:
+            mux: 'sdmux'
+      - ShellDriver:
+          prompt: '(\x1b\[\?2004h|\x1b\\)?root@[\w-]+:[^ ]+[#$] '
+          login_prompt: 'login: '
+          login_timeout: 120
+          username: 'root'
+          name: 'example-sdmux-shell-1'
+          bindings:
+            console: 'example-sdmux-console-1'
+      - SdMuxBootStrategy:
+          name: 'example-sdmux-strategy-1'
+          bindings:
+            power: 'example-sdmux-power-1'
+            console: 'example-sdmux-console-1'
+            shell: 'example-sdmux-shell-1'
+
+images:
+  sdimage: "/srv/images/example-sdmux/rootfs.wic.gz"
+tools:
+  usbsdmux: '/usr/local/bin/usbsdmux'
+
+imports:
+  - strategy.py

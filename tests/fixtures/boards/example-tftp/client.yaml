@@ -1,0 +1,53 @@
+targets:
+  main:
+    resources:
+      RemotePlace:
+        name: example-tftp
+    drivers:
+      - SerialDriver:
+          name: 'example-tftp-console-1'
+          bindings:
+            port: 'serial'
+      - GpioDigitalOutputDriver:
+          name: 'example-tftp-power-gpio-1'
+          bindings:
+            gpio: 'power-gpio'
+      - DigitalOutputPowerDriver:
+          name: 'example-tftp-power-1'
+          bindings:
+            output: 'example-tftp-power-gpio-1'
+      - TFTPProviderDriver:
+          name: 'example-tftp-tftp-1'
+          bindings:
+            provider: 'tftp'
+      - UBootDriver:
+          prompt: '=> '
+          autoboot: 'Hit any key to stop autoboot'
+          interrupt: ' '
+          name: 'example-tftp-uboot-1'
+          boot_commands:
+            emmc: 'boot'
+            tftp: 'booti $kernel_addr_r - $fdt_addr_r'
+          bindings:
+            console: 'example-tftp-console-1'
+          login_timeout: 30
+          boot_timeout: 30
+          strip_timestamp: True
+      - ShellDriver:
+          prompt: 'root@[\w-]+:[^ ]+# '
+          login_prompt: '[-\w]+ login: '
+          username: 'root'
+          name: 'example-tftp-shell-1'
+          bindings:
+            console: 'example-tftp-console-1'
+      - TftpBootStrategy:
+          name: 'example-tftp-strategy-1'
+          bindings:
+            power: 'example-tftp-power-1'
+            console: 'example-tftp-console-1'
+            uboot: 'example-tftp-uboot-1'
+            shell: 'example-tftp-shell-1'
+            tftp: 'example-tftp-tftp-1'
+
+imports:
+  - strategy.py

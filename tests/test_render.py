@@ -1,14 +1,14 @@
 import pytest
-from conftest import REAL_BOARDS
+from conftest import EXAMPLE_BOARDS
 
 from labgrid_boardkit.manifest import board_variants
 from labgrid_boardkit.render import INDEX_NAME, _find_boards, render, render_index
 
 
-@pytest.mark.parametrize("board", REAL_BOARDS)
+@pytest.mark.parametrize("board", EXAMPLE_BOARDS)
 def test_render_matches_committed_output(boards_dir, board):
     """Regression guard: the committed client.yaml/env.yaml (and any
-    client-<variant>.yaml) for every real board must match what render()
+    client-<variant>.yaml) for every example board must match what render()
     produces from board.yaml right now. This is the same invariant
     `boardkit-render --check` enforces in CI, exercised here as a pure unit
     test with no network/hardware involved."""
@@ -31,7 +31,7 @@ def test_machine_index_has_a_row_per_variant(tmp_path):
         "name: my-board\n"
         "yocto_machine: my-machine\n"
         "strategy: qemu\n"
-        "remote_place: tg-my-board\n"
+        "remote_place: example-place\n"
         "variants:\n"
         "  mainline:\n"
         "    yocto_machine: my-machine-mainline\n"

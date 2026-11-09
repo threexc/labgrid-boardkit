@@ -1,0 +1,6 @@
+machine	board	variant	strategy	remote_place	tftp_subdir	initramfs	nightly	client	image_dir
+example-fastboot	example-fastboot	-	fastboot	example-fastboot	example-fastboot	no	yes	client.yaml	/srv/images/example-fastboot
+qemuriscv64	example-qemu	-	qemu	-	example-qemu	no	yes	env.yaml	-
+example-sdmux	example-sdmux	-	sdmux	example-sdmux	example-sdmux	no	yes	client.yaml	-
+example-sdmux	example-sdmux	tftp	tftp	example-sdmux	example-sdmux	yes	no	client-tftp.yaml	-
+example-tftp	example-tftp	-	tftp	example-tftp	example-tftp	no	yes	client.yaml	-
