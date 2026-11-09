@@ -46,7 +46,9 @@ def uboot_set_server_ip(strategy, serverip=default_serverip):
     strategy.uboot.run("setenv autoload no")
     # run_check: a failed dhcp/tftpboot should fail here, not as a confusing
     # boot timeout later.
-    strategy.uboot.run_check("dhcp", timeout=10)
+    # uboot.dhcp_timeout covers PHY autonegotiation too, which dhcp waits for.
+    timeout = strategy.manifest.get("uboot", {}).get("dhcp_timeout", 10)
+    strategy.uboot.run_check("dhcp", timeout=timeout)
     strategy.uboot.run(f"setenv serverip {serverip}")
 
 
