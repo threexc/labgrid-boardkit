@@ -15,6 +15,7 @@ from labgrid_boardkit.strategies.fastboot import FastbootFlashStrategy, Fastboot
 from labgrid_boardkit.strategies.qemu import ExternalQemuStrategy, QemuBootStrategy, QemuStatus
 from labgrid_boardkit.strategies.sdmux import SdMuxBootStrategy, SdMuxStatus
 from labgrid_boardkit.strategies.tftp import TftpBootStrategy, TftpStatus
+from labgrid_boardkit.strategies.ymodem import YmodemBootStrategy
 
 
 class FakeTarget:
@@ -215,17 +216,51 @@ def test_fastboot_transition_to_shell_boots(fastboot_strategy):
 def test_fastboot_stage_retries_stale_device(fastboot_strategy):
     s = fastboot_strategy
     s.fastboot.side_effect = [subprocess.CalledProcessError(1, "fastboot"), None]
-    s._stage("/r/u-boot.itb")
+    s._stage_image("/r/u-boot.itb")
     assert s.fastboot.call_args_list == [call("stage", "/r/u-boot.itb")] * 2
 
     s.fastboot.side_effect = subprocess.CalledProcessError(1, "fastboot")
     with pytest.raises(subprocess.CalledProcessError):
-        s._stage("/r/u-boot.itb")
+        s._stage_image("/r/u-boot.itb")
 
 
 def test_fastboot_force_rejects_flashed(fastboot_strategy):
     with pytest.raises(StrategyError):
         fastboot_strategy.force("flashed")
+
+
+# ---- YmodemBootStrategy ----------------------------------------------------
+
+
+def test_ymodem_transition_to_uboot_stages_loader_then_sends_image(tmp_path):
+    (tmp_path / "u-boot.itb").write_bytes(b"itb")
+    s = YmodemBootStrategy(target=FakeTarget(), name="ymodem-test")
+    _mock_drivers(s, "power", "console", "uboot", "shell", "tftp", "fastboot", "recovery", "reset")
+    s.manifest = {
+        "fastboot": {
+            "image_dir": str(tmp_path),
+            "stage": ["spl.bin"],
+            "press_time": 0,
+            "power_on_delay": 0,
+            "continue_delay": 0,
+        },
+        "ymodem": {"image": "u-boot.itb"},
+    }
+    with (
+        patch("labgrid_boardkit.strategies.fastboot.ManagedFile") as mf,
+        patch("labgrid_boardkit.strategies.ymodem.ymodem.send") as send,
+    ):
+        mf.return_value.get_remote_path.return_value = "/r/spl.bin"
+        s.transition("uboot")
+
+    assert s.fastboot.call_args_list == [call("stage", "/r/spl.bin")]
+    s.fastboot.continue_boot.assert_called_once()
+    assert send.call_args.args[2:] == ("u-boot.itb", b"itb")
+    # console up before the loader starts asking for the image, U-Boot after
+    acts = s.target.activated
+    assert acts.index(s.console) < acts.index(s.fastboot) < acts.index(s.uboot)
+    assert s.fastboot in s.target.deactivated
+    assert s.status == TftpStatus.uboot
 
 
 # ---- QemuBootStrategy -------------------------------------------------------

@@ -4,3 +4,4 @@ qemuriscv64	example-qemu	-	qemu	-	example-qemu	no	yes	env.yaml	-
 example-sdmux	example-sdmux	-	sdmux	example-sdmux	example-sdmux	no	yes	client.yaml	-
 example-sdmux	example-sdmux	tftp	tftp	example-sdmux	example-sdmux	yes	no	client-tftp.yaml	-
 example-tftp	example-tftp	-	tftp	example-tftp	example-tftp	no	yes	client.yaml	-
+example-ymodem	example-ymodem	-	ymodem	example-ymodem	example-ymodem	fit	yes	client.yaml	/srv/images/example-ymodem

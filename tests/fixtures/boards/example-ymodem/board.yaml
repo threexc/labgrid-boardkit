@@ -1,0 +1,29 @@
+name: example-ymodem
+yocto_machine: example-ymodem
+strategy: ymodem
+description: Board whose U-Boot is staged over fastboot and YMODEM, then TFTP-boots
+remote_place: example-ymodem
+inherits:
+  - ../families/example-soc/defaults.yaml
+
+buttons: [recovery, reset]
+
+fastboot:
+  image_dir: /srv/images/example-ymodem
+  recovery_button: recovery
+  reset_button: reset
+  stage:
+    - u-boot-spl-ymodem.bin
+
+ymodem:
+  image: u-boot.itb
+
+boot:
+  bootargs: console=ttyS0,115200 shell
+
+tftp:
+  subdir: example-ymodem
+  kernel: fitImage
+
+uboot:
+  tftp_cmd: bootm $kernel_addr_r

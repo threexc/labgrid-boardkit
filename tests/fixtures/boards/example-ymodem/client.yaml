@@ -1,0 +1,68 @@
+targets:
+  main:
+    resources:
+      RemotePlace:
+        name: example-ymodem
+    drivers:
+      - SerialDriver:
+          name: 'example-ymodem-console-1'
+          bindings:
+            port: 'serial'
+      - GpioDigitalOutputDriver:
+          name: 'example-ymodem-power-gpio-1'
+          bindings:
+            gpio: 'power-gpio'
+      - DigitalOutputPowerDriver:
+          name: 'example-ymodem-power-1'
+          bindings:
+            output: 'example-ymodem-power-gpio-1'
+      - GpioDigitalOutputDriver:
+          name: 'example-ymodem-recovery-gpio-1'
+          bindings:
+            gpio: 'recovery-gpio'
+      - GpioDigitalOutputDriver:
+          name: 'example-ymodem-reset-gpio-1'
+          bindings:
+            gpio: 'reset-gpio'
+      - AndroidFastbootDriver:
+          name: 'example-ymodem-fastboot-1'
+          bindings:
+            fastboot: 'fastboot'
+      - TFTPProviderDriver:
+          name: 'example-ymodem-tftp-1'
+          bindings:
+            provider: 'tftp'
+      - UBootDriver:
+          prompt: '=> '
+          autoboot: 'Hit any key to stop autoboot'
+          interrupt: ' '
+          name: 'example-ymodem-uboot-1'
+          boot_commands:
+            emmc: 'boot'
+            tftp: 'bootm $kernel_addr_r'
+          bindings:
+            console: 'example-ymodem-console-1'
+          login_timeout: 30
+          boot_timeout: 30
+          strip_timestamp: True
+      - ShellDriver:
+          prompt: 'root@[\w-]+:[^ ]+# '
+          login_prompt: '[-\w]+ login: '
+          username: 'root'
+          name: 'example-ymodem-shell-1'
+          bindings:
+            console: 'example-ymodem-console-1'
+      - YmodemBootStrategy:
+          name: 'example-ymodem-strategy-1'
+          bindings:
+            power: 'example-ymodem-power-1'
+            console: 'example-ymodem-console-1'
+            uboot: 'example-ymodem-uboot-1'
+            shell: 'example-ymodem-shell-1'
+            tftp: 'example-ymodem-tftp-1'
+            fastboot: 'example-ymodem-fastboot-1'
+            recovery: 'example-ymodem-recovery-gpio-1'
+            reset: 'example-ymodem-reset-gpio-1'
+
+imports:
+  - strategy.py

@@ -5,6 +5,7 @@ from labgrid_boardkit.strategies.fastboot import FastbootFlashStrategy
 from labgrid_boardkit.strategies.qemu import QemuBootStrategy
 from labgrid_boardkit.strategies.sdmux import SdMuxBootStrategy
 from labgrid_boardkit.strategies.tftp import TftpBootStrategy
+from labgrid_boardkit.strategies.ymodem import YmodemBootStrategy
 
 
 def test_available_strategies_lists_builtin_families():
@@ -13,6 +14,7 @@ def test_available_strategies_lists_builtin_families():
     assert strategies["sdmux"] == "labgrid_boardkit.strategies.sdmux:SdMuxBootStrategy"
     assert strategies["fastboot"] == "labgrid_boardkit.strategies.fastboot:FastbootFlashStrategy"
     assert strategies["qemu"] == "labgrid_boardkit.strategies.qemu:QemuBootStrategy"
+    assert strategies["ymodem"] == "labgrid_boardkit.strategies.ymodem:YmodemBootStrategy"
 
 
 @pytest.mark.parametrize(
@@ -22,6 +24,7 @@ def test_available_strategies_lists_builtin_families():
         ("sdmux", SdMuxBootStrategy),
         ("fastboot", FastbootFlashStrategy),
         ("qemu", QemuBootStrategy),
+        ("ymodem", YmodemBootStrategy),
     ],
 )
 def test_strategy_for_resolves_registered_families(name, expected):
