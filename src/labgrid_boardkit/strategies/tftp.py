@@ -1,4 +1,5 @@
 import enum
+import os
 
 import attr
 from labgrid.strategy.common import StrategyError
@@ -39,7 +40,10 @@ class TftpBootStrategy(BoardStrategy):
 
     @property
     def bootargs(self) -> str:
-        return self.manifest["boot"]["bootargs"].strip()
+        # BOARDKIT_BOOTARGS, if set and non-empty, replaces the manifest's
+        # bootargs for this run, e.g. to try debug options without editing
+        # board.yaml.
+        return (os.environ.get("BOARDKIT_BOOTARGS") or self.manifest["boot"]["bootargs"]).strip()
 
     def _stage(self):
         helpers.uboot_stage(self)

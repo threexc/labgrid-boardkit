@@ -102,6 +102,13 @@ def test_tftp_transition_to_tftp_sets_bootargs_and_boots(tftp_strategy):
     tftp_strategy.uboot.await_boot.assert_called_once()
 
 
+def test_tftp_bootargs_env_override(tftp_strategy, monkeypatch):
+    monkeypatch.setenv("BOARDKIT_BOOTARGS", "")
+    assert tftp_strategy.bootargs == "console=ttyS0"
+    monkeypatch.setenv("BOARDKIT_BOOTARGS", " earlycon=sbi console=ttyS0 ")
+    assert tftp_strategy.bootargs == "earlycon=sbi console=ttyS0"
+
+
 def test_tftp_transition_without_dtb_loads_only_the_kernel(tftp_strategy):
     tftp_strategy.manifest["tftp"] = {"subdir": "my-board", "kernel": "fitImage"}
 
