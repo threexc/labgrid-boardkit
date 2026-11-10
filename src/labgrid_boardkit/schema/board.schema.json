@@ -144,7 +144,7 @@
     {
       "if": { "properties": { "strategy": { "const": "ymodem" } }, "required": ["strategy"] },
       "then": {
-        "required": ["boot", "tftp", "fastboot", "buttons", "ymodem"],
+        "required": ["boot", "tftp", "fastboot", "buttons"],
         "properties": {
           "boot": { "required": ["bootargs", "kernel_addr"] },
           "tftp": { "required": ["subdir", "kernel"] },

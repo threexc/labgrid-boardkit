@@ -44,6 +44,10 @@ class YmodemBootStrategy(TftpBootStrategy):
     def _power_on(self):
         self._load_stages()
         self.target.deactivate(self.fastboot)
+        # Without ymodem.image, the last staged image is the bootloader itself
+        # (e.g. a full vendor SPL that loads u-boot.itb over fastboot).
+        if "image" not in self.manifest.get("ymodem", {}):
+            return
         path = Path(self._image(self.manifest["ymodem"]["image"]))
         data = path.read_bytes()
         # Wait for the receiver's repeated "C"s through the console driver, so

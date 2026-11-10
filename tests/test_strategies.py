@@ -272,6 +272,31 @@ def test_ymodem_transition_to_uboot_stages_loader_then_sends_image(tmp_path):
     assert s.status == TftpStatus.uboot
 
 
+def test_ymodem_without_image_only_stages(tmp_path):
+    s = YmodemBootStrategy(target=FakeTarget(), name="ymodem-test")
+    _mock_drivers(s, "power", "console", "uboot", "shell", "tftp", "fastboot", "recovery", "reset")
+    s.manifest = {
+        "fastboot": {
+            "image_dir": str(tmp_path),
+            "stage": ["FSBL.bin", "u-boot.itb"],
+            "press_time": 0,
+            "power_on_delay": 0,
+            "continue_delay": 0,
+        },
+    }
+    with (
+        patch("labgrid_boardkit.strategies.fastboot.ManagedFile") as mf,
+        patch("labgrid_boardkit.strategies.ymodem.ymodem.send") as send,
+    ):
+        mf.return_value.get_remote_path.side_effect = ["/r/FSBL.bin", "/r/u-boot.itb"]
+        s.transition("uboot")
+
+    assert s.fastboot.call_args_list == [call("stage", "/r/FSBL.bin"), call("stage", "/r/u-boot.itb")]
+    send.assert_not_called()
+    s.console.expect.assert_not_called()
+    assert s.status == TftpStatus.uboot
+
+
 # ---- QemuBootStrategy -------------------------------------------------------
 
 
