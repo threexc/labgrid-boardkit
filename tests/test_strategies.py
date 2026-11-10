@@ -256,6 +256,8 @@ def test_ymodem_transition_to_uboot_stages_loader_then_sends_image(tmp_path):
     assert s.fastboot.call_args_list == [call("stage", "/r/spl.bin")]
     s.fastboot.continue_boot.assert_called_once()
     assert send.call_args.args[2:] == ("u-boot.itb", b"itb")
+    # the loader's own output is read (and logged) up to its "C"s first
+    s.console.expect.assert_called_once_with("CC", timeout=60)
     # console up before the loader starts asking for the image, U-Boot after
     acts = s.target.activated
     assert acts.index(s.console) < acts.index(s.fastboot) < acts.index(s.uboot)

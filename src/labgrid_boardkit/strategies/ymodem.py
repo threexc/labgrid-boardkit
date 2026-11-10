@@ -46,6 +46,10 @@ class YmodemBootStrategy(TftpBootStrategy):
         self.target.deactivate(self.fastboot)
         path = Path(self._image(self.manifest["ymodem"]["image"]))
         data = path.read_bytes()
+        # Wait for the receiver's repeated "C"s through the console driver, so
+        # what the loader prints first (e.g. SPL clock or DRAM errors) lands in
+        # the console log; ymodem.send discards non-protocol bytes.
+        self.console.expect("CC", timeout=60)
         # Takes minutes at 115200 baud, with nothing else logged meanwhile.
         self.logger.info("Sending %s (%d bytes) over YMODEM", path.name, len(data))
         ymodem.send(self._getc, self.console._write, path.name, data)
